@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>quick demo</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+  </head>
+  <body ng-app="app" ng-controller="ctrl">
+
+  <img src="sign-in-with-google.png" ng-click="login()">
+  
+  </body>
+
+  <script>
+    var app = angular.module("app", []);
+
+    app.controller("ctrl", function($scope, $http, $window) {
+
+      var url;
+      var windowThatWasOpened;
+
+      $http.get("url").then(function(response) {
+        url = response.data;
+      });
+
+      $scope.login = function() {
+
+        windowThatWasOpened = $window.open(url, "Please sign in with Google", "width=500px,height:700px");
+        
+      };
+
+      window.onmessage = function(e) {
+        windowThatWasOpened.close();
+        var urlWithCode = e.data;
+
+        var idx = urlWithCode.lastIndexOf("code=");
+        var code = urlWithCode.substring(idx + 5).replace("#","");
+
+        console.log(code);
+
+        $http.get("tokens?code=" + code).then(function(response) {
+          console.log(response.data);
+        });
+
+      };
+
+
+    });
+
+  </script>
+</html>
